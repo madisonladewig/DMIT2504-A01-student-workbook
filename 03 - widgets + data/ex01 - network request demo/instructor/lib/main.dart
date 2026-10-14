@@ -18,26 +18,11 @@ import 'package:http/http.dart'; // for HTTP requests e.g. get()
 
 // in flutter,
 //  r - hot reload  - will not re-fire main() function
-//  R - hot restart - (shift+r) *will* re-fire main() function 
-
-// I can't have a stateless widget with an async build method, so I need some other way
-// of setting up my dog URL before showing it:
-String dogImageUrl = '';
+//  R - hot restart - (shift+r) *will* re-fire main() function
 
 
 Future<void> main() async {
-  // separate out the async behaviour from the sync widget rendering
-  dogImageUrl = await RandomDogImage.getRandomDogUrl();
-    runApp(const MainApp());
-
-  /* issues with this:
-      - global scope for locally relevant behaviour is super gross
-      - can't get new dog unless I restart whole app (e.g.: can't refresh account balance w/o restarting entire banking app)
-      - what happens if phone is offline / request fails or hangs: entire app doesn't load soon or ever
-  
-    -> we'll correct this by: using a stateful widget that can fetch and store its own data,
-       and update itself when the data arrives!
-  */
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -48,16 +33,33 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: RandomDogImage(),
+          child: RandomDogImage()
         ),
       ),
     );
   }
 }
 
-class RandomDogImage extends StatelessWidget {
+
+class RandomDogImage extends StatefulWidget {
+  // 'outer wrapper'. all widgets are more or less immutable, and will be redrawn
 
   const RandomDogImage({super.key});
+
+  // so we pack all our stuff inside a mutable comparment
+  @override
+  State<RandomDogImage> createState() => _RandomDogImageState();
+}
+
+
+
+// instead of const [x, setX] = useState('default value') in React, we...
+class _RandomDogImageState extends State<RandomDogImage> {
+  // this is the mutable container
+  // the .build() method exists here, *not* up one level in the StatefulWidget itself,
+  // because rendering needs direct access to the stateful variables/data.
+
+  String dogImageUrl = '';
 
   // static method, bc no inputs that change / nothing instance-dependent
   static Future<String> getRandomDogUrl() async {
@@ -67,9 +69,66 @@ class RandomDogImage extends StatelessWidget {
     return jsonDecode(response.body)['message'];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Image.network(dogImageUrl);
+  // refactor dog pic URL fetching into its own function, so i can reuse it
+  Future<void> fetchNewDog() async {
+    if (!mounted) return;
+
+    setState(() { dogImageUrl = ''; });  // reset dog state - i want loading text to show + data hygiene
+    final url = await getRandomDogUrl();
+
+    setState(() { dogImageUrl = url; }); // change the dog img url + trigger re-render
+
+    // I can use await now that this is broken out into its own function;
+    // I was forced to use someAsyncFunction().then() in the previous implementation
+    // because initState() can't be async (neither can build()).
   }
 
+
+  @override
+  void initState() { // think of this as (React equiv.) useEffect that changes state
+    super.initState(); 
+    fetchNewDog();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    // ternary gang: conditionally return loading text OR dog image
+    // if dogImageUrl=='', show loading text, else show oog image
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[   
+      
+        // child 1: loading text or dog pic
+        // We'll use a SizedBox to control position of image + button:
+        // always occupy fixed space, so button doesn't jump around when dog loads
+        SizedBox(
+          height: 300,
+          child: dogImageUrl.isEmpty 
+            ? const Text("Loading dog...")
+            : Image.network(dogImageUrl)
+        ),
+
+        const SizedBox(height: 24), // just a simple, lazy spacer
+
+        // child 3: press buttan, receive dog
+        ElevatedButton(
+          onPressed: fetchNewDog,
+          child: const Text("fetch new dog (I don't like mine. I want to trade it in)")
+        )
+      ]
+    );
+  }
 }
+
+
+// class RandomDogImage extends StatelessWidget {
+
+//   const RandomDogImage({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Image.network(dogImageUrl);
+//   }
+
+// }
