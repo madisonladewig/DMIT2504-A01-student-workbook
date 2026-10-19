@@ -1,9 +1,17 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
+import 'widgets/page_title.dart';
+import 'widgets/random_dog_image.dart';
+// relative import. I'm in lib/, so the direct relative path is ./widgets/blahblah.dart
 
+// the other option is an explicit import, requiring you to state the project/pkg name (see pubspec.yaml):
+// import 'package:week_03_network_image/widgets/random_dog_image.dart';
+
+// I would argue relative imports for files internal to this project would be better,
+// because they implicitly communicate that the imports are local / not from a 3rd party pkg.
+// I would personally stick to using package: for third-party packages so someone reading my code
+// could intuit the difference.
 
 Future<void> main() async {
   runApp(const MainApp());
@@ -17,7 +25,12 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: RandomDogImage()
+          child: Column(
+            children: <Widget>[
+              PageTitle('DO U LIEK TEHSE DOGS?!??!11'),
+              RandomDogImage(),
+            ]
+          ),    
         ),
       ),
     );
@@ -25,67 +38,4 @@ class MainApp extends StatelessWidget {
 }
 
 
-class RandomDogImage extends StatefulWidget {
 
-  const RandomDogImage({super.key});
-
-  // so we pack all our stuff inside a mutable comparment
-  @override
-  State<RandomDogImage> createState() => _RandomDogImageState();
-}
-
-
-
-class _RandomDogImageState extends State<RandomDogImage> {
-
-  String dogImageUrl = '';
-
-  static Future<String> getRandomDogUrl() async {
-    const dogEndpoint = 'https://dog.ceo/api/breeds/image/random';
-    var response      = await get(Uri.parse(dogEndpoint));
-
-    return jsonDecode(response.body)['message'];
-  }
-
-  Future<void> fetchNewDog() async {
-    if (!mounted) return;
-
-    setState(() { dogImageUrl = ''; });
-    final url = await getRandomDogUrl();
-
-    setState(() { dogImageUrl = url; });
-  }
-
-
-  @override
-  void initState() {
-    super.initState(); 
-    fetchNewDog();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[   
-
-        SizedBox(
-          height: 300,
-          child: dogImageUrl.isEmpty 
-            ? const Text("Loading dog...")
-            : GestureDetector(
-                onTap: fetchNewDog,
-                child: Image.network(dogImageUrl)
-            ),
-        ),
-
-        const SizedBox(height: 24),
-        
-        const Text("press dog to get new dog"),
-
-      ]
-    );
-  }
-}
