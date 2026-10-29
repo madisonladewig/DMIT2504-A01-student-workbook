@@ -44,7 +44,8 @@ class _HomeState extends State<Home> {
                 data = returnedData;
               });
             },
-            child: const Text("go to page and back to see returned data"),
+            child: const Text("Please select your excuse for not attending class."),
+            // I solemnly promise I'm not doing this passive-aggressivel; I'm genuinely just having fun
           ),
 
           data.isEmpty ? const Text('No data received yet.') : Text('Data received:\n$data') 
