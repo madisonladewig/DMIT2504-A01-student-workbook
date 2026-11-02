@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'routes.dart';
 import 'pages/home.dart';
+import 'pages/profile/profile_router.dart';
 
 
 void main() {
@@ -35,6 +36,9 @@ class MainApp extends StatelessWidget {
             page: const ProfilePage();  // NOT every single page/route in profile submodule of the app
             break;          
             */
+          case profileRoute:
+            page = const ProfileRouter();
+            break;
           default:
             throw Exception('Unknown route: ${settings.name}');
         }

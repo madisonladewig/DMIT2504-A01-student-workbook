@@ -5,3 +5,4 @@
 
 
 const homeRoute = '/';
+const profileRoute = '/profile';
