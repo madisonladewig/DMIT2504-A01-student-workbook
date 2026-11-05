@@ -3,7 +3,7 @@ class Todo {
   String description;
   bool done;
 
-  Todo({required this.description, required this.done});
+  Todo({this.id, required this.description, required this.done});
 
   /* two birds one stone here:
       1. sq(f)lite can't do booleans, so we need to remap to 0/1
