@@ -43,6 +43,19 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   bool _darkMode = false;
 
+  Future<bool> _getDarkModeFromPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('darkMode') ?? false; // if this bool is null in the cache, automatically use false as a default
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getDarkModeFromPreferences().then(  // returns that boolean
+      (isDarkMode) { setState(() { _darkMode = isDarkMode; }); }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
