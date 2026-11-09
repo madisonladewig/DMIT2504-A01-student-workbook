@@ -20,4 +20,12 @@ class Todo {
     };
   }
 
+  static Todo fromMap(Map<String, dynamic> map) {
+    return Todo(
+      id: map['id'],
+      description: map['description'],
+      done: map['done'] == 1,  // convert back from 0/1 -> true/false
+    );
+  }
+
 }

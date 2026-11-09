@@ -58,13 +58,45 @@ class TodoController {
     Further explanation: https://refactoring.guru/design-patterns/singleton
   */
 
-  Future<void> getTodos() async {}
+  /* Now for the actual sqflite <---> Todo() CRUD ops! sqflite gives us:
 
-  Future<void> addTodo(Todo todo) async {}
+      {db}.query(tableName, args?)  -> read/query
+      {db}.update(tableName, args)  -> update a given instance/row
+      {db}.insert(tableName, map)   -> add a new instance/row
+      {db}.delete(tableName, args?) -> delete (whole table if no args, otherwise selectively delete rows via query args)
+  
+    Notice that for adding/updating, we're not returning the thing that was jsut added/updated.
+    What we'll do instead is, after every write operation (add, update, delete), we will refetch the entire todo list from the 
+    backend in the widget. That way, we're only ever writign state to the db, and reading fresh state from the db.
+  */
+  Future<List<Todo>> getTodos() async {
+    // db queries return {key: value} map as well, so I have to ingest that into a Todo() instance.
+    final List<Map<String, dynamic>> maps = await _db!.query(tableName);
+  
+    return List.generate(
+      maps.length,                          // arg 1: number of iterations/items, looping counter max
+      (i) { return Todo.fromMap(maps[i]); } // arg 2: the callback function to generate a list element for each input element
+    );
+  }
 
-  Future<void> updateTodo(Todo todo) async {}
 
-  Future<void> deleteAllTodos() async {}
+  Future<void> addTodo(Todo todo) async {
+    await _db!.insert(tableName, todo.toMap());
+    // note: we're passing {key: value} map of a Todo()'s data, not the instance/object itself
+  }
+
+  Future<void> updateTodo(Todo todo) async {
+    await _db!.update(
+      tableName,     // arg 1: table name
+      todo.toMap(),  // arg 2: data to write (so far, same as adding)
+      where: 'id = ?', // args 3&4: passing a {WHERE id ==} to single out a specific row
+      whereArgs: [todo.id],  //TLDR: where+whereArgs avoids SQL injection, rather than just {where 'id = todo.id'} 
+    );
+  }
+
+  Future<void> deleteAllTodos() async {
+    await _db!.delete(tableName);  // deletes all if no other args specified
+  }
 
 
 }
