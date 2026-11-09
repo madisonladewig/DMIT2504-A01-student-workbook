@@ -1,4 +1,4 @@
-# Chapter 7: Cloud Auth and Storage
+# Chapter 6: Cloud Auth and Storage
 
 ## Readings
 
