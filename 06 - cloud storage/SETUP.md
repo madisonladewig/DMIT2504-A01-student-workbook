@@ -100,6 +100,22 @@ dart pub global activate flutterfire_cli
 
 **Restart your terminal** after this. The PATH environment variable needs to reload to find the new `flutterfire` command.
 
+---
+
+## IMPORTANT
+
+**Read traceback carefully after running this command. If you get a warning that the newly installed tools are not in your OS PATH and/or `flutterfire` commands don't work:**
+
+- type "environment" into your Windows search bar -> "edit the system environment variables"
+
+- hit `Environment Variables` button at bottom-right
+
+- in the first section (user variables), find the one called `Path` and hit `Edit`
+
+- from the new window where every directory is on its own row, hit `New`, and paste in the path from the `flutterfire` warning
+
+---
+
 Now configure your app. Run this from your Flutter project folder:
 
 ```

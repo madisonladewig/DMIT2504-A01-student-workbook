@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "304539532545",
+    "project_id": "ai-slop-grenade-unique-name",
+    "storage_bucket": "ai-slop-grenade-unique-name.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304539532545:android:e7420fb345b0c785402f00",
+        "android_client_info": {
+          "package_name": "com.example.ai_slop_grenade_unique_name"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_ACPLAS4ouHj3nrjWOXLcpc0wUB5UObk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
