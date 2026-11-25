@@ -114,9 +114,13 @@ dart pub global activate flutterfire_cli
 
 - from the new window where every directory is on its own row, hit `New`, and paste in the path from the `flutterfire` warning
 
+- if this doesn't work, try adding it to system-level PATH (the second section in env variables) rather than the user-level PATH
+
 ---
 
 Now configure your app. Run this from your Flutter project folder:
+
+(On Windows, you may be stuck typing `flutterfire.bat` instead of `flutterfire` depending on whether you're in `cmd`, powershell, or a linux-like bash shell)
 
 ```
 flutterfire configure
